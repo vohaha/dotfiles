@@ -1,0 +1,3 @@
+#!/bin/bash
+
+_source_if "$XDG_CONFIG_HOME/bash/alacritty-completion"

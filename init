@@ -1,0 +1,37 @@
+#!/bin/bash
+
+source ./configure-xdg-directories
+source ./configure-user-directories
+
+# Install Homebrew if not already installed
+if ! command -v brew &> /dev/null; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Wait for Homebrew installation to complete before proceeding
+while ! command -v brew &> /dev/null; do
+    sleep 1
+done
+
+# install on macOS
+/opt/homebrew/bin/brew tap homebrew/cask-fonts
+/opt/homebrew/bin/brew install bash bash-completion@2 stow nvim alacritty tree tmux bat
+/opt/homebrew/bin/brew install --cask homebrew/cask-fonts/font-jetbrains-mono-nerd-fon
+
+# bash completion
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# brew bash completion
+	[[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+fi
+
+# git prompt and completion
+curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh > "$XDG_CONFIG_HOME/bash/git-prompt"
+curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > "$XDG_CONFIG_HOME/bash/git-completion"
+
+# alacritty completion
+curl -L https://raw.githubusercontent.com/alacritty/alacritty/master/extra/completions/alacritty.bash > "$XDG_CONFIG_HOME/bash/alacritty-completion"
+
+# stow files
+stow -t $HOME -R */
+
+source $HOME/.bashrc
