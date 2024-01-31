@@ -12,8 +12,8 @@ while ! command -v brew &>/dev/null; do
 	sleep 1
 done
 
-brewHome=/opt/homebrew/
-brewBinPath=bin/brew
+brewHome=/opt/homebrew
+brewBinPath=$brewHome/bin/brew
 
 # install on macOS
 $brewBinPath tap homebrew/cask-fonts
