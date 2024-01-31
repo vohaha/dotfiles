@@ -1,7 +1,0 @@
-#!/bin/bash
-
-export REPOS="$HOME/Repos"
-export GHREPOS="$REPOS/github.com/"
-
-mkdir -p $REPOS
-mkdir -p $GHREPOS

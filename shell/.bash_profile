@@ -1,10 +1,11 @@
 #!/bin/bash
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  # that was brew ask to do after the instalation 
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+brewPath=/opt/homebrew/bin/brew
 
-if [ -r ~/.bashrc ]; then
-  source ~/.bashrc
+# Set up Homebrew environment
+eval "$($brewPath shellenv)"
+
+# Check if .bashrc exists, and source if it does
+if [ -f ~/.bashrc ]; then
+	source ~/.bashrc
 fi
