@@ -1,0 +1,81 @@
+[
+	{
+		"context": "Workspace",
+		"bindings": {
+			"cmd-shift-d": "diagnostics::Deploy"
+		}
+	},
+
+	{
+		"context": "Editor",
+		"bindings": {
+			"ctrl--": "zed::DecreaseBufferFontSize",
+			"ctrl-=": "zed::IncreaseBufferFontSize",
+			"alt-k": "editor::MoveLineUp",
+			"alt-j": "editor::MoveLineDown",
+			"cmd-r": "editor::Rename"
+		}
+	},
+
+	{
+		"context": "ProjectPanel",
+		"bindings": {
+			"cmd-r": "project_panel::Rename"
+		}
+	},
+
+	{
+		"context": "Editor && vim_mode == insert",
+		"bindings": {
+			"cmd-s": ["workspace::SendKeystrokes", "escape : w enter"],
+			"j k": ["workspace::SendKeystrokes", "escape"]
+		}
+	},
+
+	{
+		"context": "Editor && inline_completion && !showing_completions",
+		"bindings": {
+			"cmd-y": "editor::AcceptInlineCompletion"
+		}
+	},
+
+	{
+		"context": "Editor && showing_completions",
+		"bindings": {
+			"enter": null,
+			"tab": null,
+			"ctrl-y": "editor::ConfirmCompletion"
+		}
+	},
+
+	{
+		"context": "Editor && inline_completion && !showing_completions",
+		"bindings": {
+			"tab": null,
+			"ctrl-y": "editor::AcceptInlineCompletion"
+		}
+	},
+
+	// breaks the ciw for example
+	// {
+	// 	"context": "VimControl && !menu",
+	// 	"bindings": {
+	// 		"w": "vim::NextSubwordStart",
+	// 		"b": "vim::PreviousSubwordStart",
+	// 		"e": "vim::NextSubwordEnd",
+	// 		"g e": "vim::PreviousSubwordEnd"
+	// 	}
+	// },
+
+	{
+		"context": "vim_mode == visual",
+		"bindings": {
+			"shift-s": [
+				"vim::PushOperator",
+				{
+					"AddSurrounds": {}
+				}
+			]
+		}
+	}
+]
