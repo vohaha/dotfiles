@@ -7,17 +7,15 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
-	"assistant": {
+	"telemetry": {
+  "metrics": false
+ },
+ "assistant": {
 		"default_model": {
 			"provider": "openai",
 			"model": "gpt-4o"
 		},
-		"version": "2",
-		"provider": {
-			"name": "openai",
-			"default_model": "gpt-4o",
-			"available_models": []
-		}
+		"version": "2"
 	},
 	"hard_tabs": true,
 	"vim_mode": true,
@@ -39,5 +37,12 @@
 	"centered_layout": {
 		"left_padding": 0.4
 	},
-	"vertical_scroll_margin": 15
+	"vertical_scroll_margin": 15,
+	"show_whitespaces": "all",
+	"languages": {
+		"YAML": {
+			"hard_tabs": false,
+			"tabs_size": 4
+		}
+	}
 }
