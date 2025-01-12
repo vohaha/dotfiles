@@ -8,3 +8,9 @@ blur = true
 
 [terminal.shell]
 program = "/home/vohaha/.config/alacritty/start-tmux.sh"
+
+[font]
+normal.family = "JetBrainsMono Nerd Font"
+bold.family = "JetBrainsMono Nerd Font, Bold"
+italic.family = "JetBrainsMono Nerd Font, Italic"
+size = 16

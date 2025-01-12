@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  tasks:
+    - name: install basic packages
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - curl
+        - htop
+
+    - name: install other packages
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - fzf
+        - ripgrep
+        - luarocks
+        - fd
+        - lazygit
+
+    - name: Install nvm
+      ansible.builtin.shell: >
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+      args:
+        creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
