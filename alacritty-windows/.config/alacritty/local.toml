@@ -6,4 +6,4 @@ blur = true
 
 [terminal.shell]
 program = "wsl.exe"
-args = ["--cd", "~", "-e", "bash", "-lc", "tmux new-session -A -s main"]
+args = ["-e", "bash", "-lc", "cd ~ && tmux new-session -A -s main"]
