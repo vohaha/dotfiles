@@ -1,24 +1,31 @@
 ---
 - hosts: localhost
   tasks:
-    - name: install basic packages
+    - name: Install Linux prerequisites
+      ansible.builtin.apt:
+        name:
+          - build-essential
+          - curl
+          - file
+          - git
+          - procps
+        state: present
+      become: true
+      when: ansible_os_family == "Debian"
+
+    - name: Install Homebrew packages
       homebrew:
         name: "{{ item }}"
         state: present
       loop:
         - curl
         - htop
-
-    - name: install other packages
-      homebrew:
-        name: "{{ item }}"
-        state: present
-      loop:
         - fzf
         - ripgrep
         - luarocks
         - fd
         - lazygit
+        - stow
 
     - name: Install nvm
       ansible.builtin.shell: >

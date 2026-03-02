@@ -1,13 +1,4 @@
-[window]
-decorations = "none"
-opacity = 1
-startup_mode = "Maximized"
-blur = true
-
-[terminal]
-
-[terminal.shell]
-program = "/home/vohaha/.config/alacritty/start-tmux.sh"
+import = ["~/.config/alacritty/local.toml"]
 
 [font]
 normal.family = "JetBrainsMono Nerd Font"

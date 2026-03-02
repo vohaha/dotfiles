@@ -1,0 +1,9 @@
+[window]
+decorations = "buttonless"
+opacity = 1
+startup_mode = "Maximized"
+blur = true
+
+[terminal.shell]
+program = "/bin/bash"
+args = ["-c", "tmux new-session -A -s main"]
