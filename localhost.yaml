@@ -26,6 +26,7 @@
         - fd
         - lazygit
         - stow
+        - tmux
 
     - name: Install nvm
       ansible.builtin.shell: >
