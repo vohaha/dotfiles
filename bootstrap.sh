@@ -110,11 +110,11 @@ stow_packages() {
 
     # Platform-specific packages: only stow if suffix matches current platform
     if [[ "$dir" == *-macos ]]; then
-      [[ "$PLATFORM" == "macos" ]] && stow "$dir" -t ~/
+      [[ "$PLATFORM" == "macos" ]] && stow --adopt "$dir" -t ~/
       continue
     fi
     if [[ "$dir" == *-linux ]]; then
-      [[ "$PLATFORM" == "linux" ]] && stow "$dir" -t ~/
+      [[ "$PLATFORM" == "linux" ]] && stow --adopt "$dir" -t ~/
       continue
     fi
     if [[ "$dir" == *-windows ]]; then
@@ -122,8 +122,11 @@ stow_packages() {
     fi
 
     # Common packages
-    stow "$dir" -t ~/
+    stow --adopt "$dir" -t ~/
   done
+
+  # --adopt moves existing files into the package dirs; restore the repo versions
+  git -C "$DOTFILES_DIR" checkout -- .
 
   echo "All packages stowed."
 }
