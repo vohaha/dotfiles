@@ -1,6 +1,3 @@
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
-
 # ---------------------------------------------------------------------------
 # Platform detection
 # ---------------------------------------------------------------------------
@@ -10,7 +7,7 @@ case "$(uname -s)" in
 esac
 
 # ---------------------------------------------------------------------------
-# Homebrew
+# Homebrew (before interactive guard so PATH is available to all login shells)
 # ---------------------------------------------------------------------------
 if [[ "$PLATFORM" == "macos" ]]; then
   if [[ -x /opt/homebrew/bin/brew ]]; then
@@ -23,6 +20,9 @@ else
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
   fi
 fi
+
+# If not running interactively, don't do anything else
+[[ $- != *i* ]] && return
 
 # ---------------------------------------------------------------------------
 # nvm

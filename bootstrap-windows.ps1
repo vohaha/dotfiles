@@ -12,6 +12,20 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# ---------------------------------------------------------------------------
+# Self-elevate when symlink creation needs admin privileges
+# ---------------------------------------------------------------------------
+$isAdmin = ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+if (-not $isAdmin) {
+    Write-Host "Restarting as Administrator (needed for symlinks)..." -ForegroundColor Yellow
+    Start-Process powershell.exe -Verb RunAs -Wait -ArgumentList `
+        "-ExecutionPolicy Bypass -File `"$($MyInvocation.MyCommand.Path)`""
+    exit $LASTEXITCODE
+}
+
 $DotfilesDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # ---------------------------------------------------------------------------
