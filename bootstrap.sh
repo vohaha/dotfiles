@@ -93,7 +93,7 @@ install_prerequisites() {
 
 run_playbook() {
   echo "Running Ansible playbook..."
-  ansible-playbook -i "$DOTFILES_DIR/inventory.ini" "$DOTFILES_DIR/localhost.yaml"
+  ansible-playbook -i "$DOTFILES_DIR/inventory.ini" "$DOTFILES_DIR/localhost.yaml" --ask-become-pass
 }
 
 stow_packages() {
