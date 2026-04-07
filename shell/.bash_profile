@@ -1,2 +1,0 @@
-# Source .bashrc for login shells
-[[ -f ~/.bashrc ]] && source ~/.bashrc
