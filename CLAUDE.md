@@ -57,11 +57,11 @@ The `.stowrc` file configures stow to ignore `.git/` by default.
 
 ## Provisioning Dependencies
 
-An Ansible playbook installs base tooling via Homebrew:
+`bootstrap.sh` drives everything — installs Homebrew + Ansible, then runs the playbook:
 ```bash
-ansible-playbook -i inventory.ini localhost.yaml
+ansible-playbook -i inventory.ini site.yml
 ```
-This installs: curl, htop, fzf, ripgrep, luarocks, fd, lazygit, stow, and nvm.
+Roles: `packages` (brew bundle from Brewfile), `stow` (explicit package list, OS-conditional), `hooks` (git hooks from `scripts/hooks/`).
 
 ## Packages
 
