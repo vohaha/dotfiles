@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ###############################################################################
-# bootstrap.sh — single entry point for macOS, Linux, WSL2, and Windows
+# bootstrap.sh — thin wrapper: install Homebrew + Ansible, then run site.yml
 ###############################################################################
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -21,21 +21,16 @@ detect_platform() {
 }
 
 # ===========================================================================
-# Windows path (delegates to PowerShell + optionally bootstraps WSL2)
+# Windows path — delegates to PowerShell, optionally bootstraps WSL2
 # ===========================================================================
 bootstrap_windows() {
   local win_dotfiles
   win_dotfiles="$(cygpath -w "$DOTFILES_DIR")"
-
   echo "Running Windows setup via PowerShell..."
   powershell.exe -ExecutionPolicy Bypass -File "$win_dotfiles\\bootstrap-windows.ps1"
-
-  echo ""
   echo "Windows-side setup complete!"
 
-  # Offer to bootstrap WSL2 dev environment
   if command -v wsl.exe &>/dev/null; then
-    echo ""
     read -rp "Also bootstrap the WSL2 dev environment? [Y/n] " answer
     if [[ "${answer:-Y}" =~ ^[Yy]$ ]]; then
       bootstrap_wsl
@@ -46,13 +41,11 @@ bootstrap_windows() {
 bootstrap_wsl() {
   local git_url
   git_url="$(git -C "$DOTFILES_DIR" remote get-url origin 2>/dev/null || true)"
-
   if [[ -z "$git_url" ]]; then
-    echo "Could not detect git remote. Please bootstrap WSL manually:"
+    echo "No git remote detected. Bootstrap WSL manually:"
     echo "  wsl bash -c 'git clone <repo-url> ~/dotfiles && cd ~/dotfiles && ./bootstrap.sh'"
     return
   fi
-
   echo "Bootstrapping inside WSL2..."
   wsl.exe bash -c "
     set -euo pipefail
@@ -77,8 +70,6 @@ install_homebrew() {
   fi
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  # Make brew available for the rest of this script
   if [[ "$PLATFORM" == "macos" ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv)"
   else
@@ -86,70 +77,29 @@ install_homebrew() {
   fi
 }
 
-install_prerequisites() {
-  echo "Installing Ansible and Stow..."
-  brew install ansible stow
+install_ansible() {
+  if command -v ansible-playbook &>/dev/null; then
+    echo "Ansible already installed."
+    return
+  fi
+  echo "Installing Ansible..."
+  brew install ansible
 }
 
 run_playbook() {
   echo "Running Ansible playbook..."
-  ansible-playbook -i "$DOTFILES_DIR/inventory.ini" "$DOTFILES_DIR/localhost.yaml" --ask-become-pass
-}
-
-stow_packages() {
-  echo "Stowing packages..."
-  cd "$DOTFILES_DIR"
-
-  for dir in */; do
-    dir="${dir%/}"
-
-    # Skip non-package directories
-    case "$dir" in
-      .git|.claude) continue ;;
-    esac
-
-    # Platform-specific packages: only stow if suffix matches current platform
-    if [[ "$dir" == *-macos ]]; then
-      [[ "$PLATFORM" == "macos" ]] && stow --adopt "$dir" -t ~/
-      continue
-    fi
-    if [[ "$dir" == *-linux ]]; then
-      [[ "$PLATFORM" == "linux" ]] && stow --adopt "$dir" -t ~/
-      continue
-    fi
-    if [[ "$dir" == *-windows ]]; then
-      continue  # Handled by bootstrap-windows.ps1
-    fi
-
-    # Common packages
-    stow --adopt "$dir" -t ~/
-  done
-
-  # --adopt moves existing files into the package dirs; restore the repo versions
-  git -C "$DOTFILES_DIR" checkout -- .
-
-  echo "All packages stowed."
-}
-
-install_git_hooks() {
-  echo "Installing git hooks..."
-  local hooks_src="$DOTFILES_DIR/scripts/hooks"
-  local hooks_dst="$DOTFILES_DIR/.git/hooks"
-  for hook in "$hooks_src"/*; do
-    local name
-    name="$(basename "$hook")"
-    cp "$hook" "$hooks_dst/$name"
-    chmod +x "$hooks_dst/$name"
-    echo "  installed: $name"
-  done
+  local become_flag=""
+  [[ "$PLATFORM" == "linux" ]] && become_flag="--ask-become-pass"
+  ansible-playbook \
+    -i "$DOTFILES_DIR/inventory.ini" \
+    "$DOTFILES_DIR/site.yml" \
+    $become_flag
 }
 
 bootstrap_unix() {
   install_homebrew
-  install_prerequisites
+  install_ansible
   run_playbook
-  stow_packages
-  install_git_hooks
 }
 
 # ---------------------------------------------------------------------------

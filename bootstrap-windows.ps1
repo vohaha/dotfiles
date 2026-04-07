@@ -121,19 +121,35 @@ if (Test-Path "$DotfilesDir\zed\.config\zed\keymap.json") {
 }
 
 # ---------------------------------------------------------------------------
-# 4. Next steps
+# 4. Bootstrap WSL2 dev environment
 # ---------------------------------------------------------------------------
-Write-Host "`n=== Next steps ===" -ForegroundColor Cyan
-Write-Host @"
-  Windows-side setup complete!
+Write-Host "`n=== WSL2 Dev Environment ===" -ForegroundColor Cyan
+$answer = Read-Host "Bootstrap dotfiles inside WSL2 now? [Y/n]"
+if ($answer -eq '' -or $answer -match '^[Yy]') {
+    try {
+        $gitUrl = git -C $DotfilesDir remote get-url origin 2>$null
+    } catch {
+        $gitUrl = $null
+    }
 
-  To finish setting up your dev environment inside WSL2:
-    1. Open a WSL terminal (or launch Alacritty)
-    2. Clone this repo:
-         git clone <your-repo-url> ~/dotfiles
-    3. Run the bootstrap script:
-         cd ~/dotfiles && ./bootstrap.sh
-
-  Font: Install "JetBrainsMono Nerd Font" manually from
-        https://www.nerdfonts.com/font-downloads
+    if (-not $gitUrl) {
+        Write-Host "  No git remote detected. Bootstrap WSL2 manually:" -ForegroundColor Yellow
+        Write-Host "    wsl bash -c 'git clone <repo-url> ~/dotfiles && cd ~/dotfiles && ./bootstrap.sh'"
+    } else {
+        Write-Host "  Bootstrapping inside WSL2..." -ForegroundColor White
+        wsl bash -c @"
+set -euo pipefail
+if [ -d ~/dotfiles ]; then
+  echo 'Updating existing ~/dotfiles...'
+  cd ~/dotfiles && git pull
+else
+  git clone '$gitUrl' ~/dotfiles
+fi
+cd ~/dotfiles && ./bootstrap.sh
 "@
+        Write-Host "  WSL2 bootstrap complete!" -ForegroundColor Green
+    }
+}
+
+Write-Host "`n  Font: Install 'JetBrainsMono Nerd Font' manually from https://www.nerdfonts.com/font-downloads" -ForegroundColor Yellow
+Write-Host "`nWindows-side setup complete!" -ForegroundColor Green

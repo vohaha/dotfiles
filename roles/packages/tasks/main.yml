@@ -1,0 +1,21 @@
+---
+# ── Linux apt prerequisites (before Homebrew works on Debian/Ubuntu) ─────────
+- name: Install apt prerequisites
+  ansible.builtin.apt:
+    name:
+      - build-essential
+      - curl
+      - file
+      - git
+      - procps
+    state: present
+  become: true
+  when: ansible_facts['os_family'] == "Debian"
+
+# ── Homebrew bundle (macOS and Linux/WSL2) ────────────────────────────────────
+- name: Install packages via brew bundle
+  ansible.builtin.command:
+    cmd: brew bundle --file={{ playbook_dir }}/Brewfile --no-upgrade
+    chdir: "{{ playbook_dir }}"
+  changed_when: false
+  when: ansible_facts['system'] in ["Darwin", "Linux"]

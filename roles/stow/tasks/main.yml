@@ -1,0 +1,50 @@
+---
+- name: Set platform fact
+  ansible.builtin.set_fact:
+    dotfiles_platform: >-
+      {{
+        'macos' if ansible_facts['system'] == 'Darwin' else 'linux'
+      }}
+
+# ── Common packages ───────────────────────────────────────────────────────────
+- name: Stow common packages
+  ansible.builtin.command:
+    cmd: stow --adopt {{ item }} -t {{ ansible_env.HOME }}
+    chdir: "{{ playbook_dir }}"
+  loop:
+    - shell
+    - git
+    - tmux
+    - zed
+    - nvim
+  changed_when: false
+
+# ── Platform-specific packages ────────────────────────────────────────────────
+- name: Stow platform-specific alacritty overrides
+  ansible.builtin.command:
+    cmd: stow --adopt alacritty-{{ dotfiles_platform }} -t {{ ansible_env.HOME }}
+    chdir: "{{ playbook_dir }}"
+  changed_when: false
+
+- name: Stow alacritty (shared config)
+  ansible.builtin.command:
+    cmd: stow --adopt alacritty -t {{ ansible_env.HOME }}
+    chdir: "{{ playbook_dir }}"
+  changed_when: false
+
+# ── macOS-only packages ───────────────────────────────────────────────────────
+- name: Stow macOS-only packages
+  ansible.builtin.command:
+    cmd: stow --adopt {{ item }} -t {{ ansible_env.HOME }}
+    chdir: "{{ playbook_dir }}"
+  loop:
+    - aerospace
+  when: ansible_facts['system'] == "Darwin"
+  changed_when: false
+
+# ── Restore repo versions after --adopt ──────────────────────────────────────
+- name: Restore repo file versions after --adopt
+  ansible.builtin.command:
+    cmd: git checkout -- .
+    chdir: "{{ playbook_dir }}"
+  changed_when: false
