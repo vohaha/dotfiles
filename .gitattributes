@@ -1,0 +1,17 @@
+# Force LF line endings for shell scripts so they work in WSL/Linux
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+.bashrc text eol=lf
+.bash_profile text eol=lf
+
+# PowerShell scripts can keep CRLF
+*.ps1 text eol=crlf
+
+# Lua (Neovim config)
+*.lua text eol=lf
+
+# TOML / YAML config
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Pre-commit hook: regenerate LAYERS.md from current machine state.
+
+set -euo pipefail
+
+DOTFILES_DIR="$(git rev-parse --show-toplevel)"
+
+if ! bash "$DOTFILES_DIR/scripts/generate-layers.sh"; then
+    echo "ERROR: generate-layers.sh failed — commit aborted" >&2
+    exit 1
+fi
+
+git add "$DOTFILES_DIR/LAYERS.md"

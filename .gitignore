@@ -1,0 +1,4 @@
+tmux-client-*.log
+.idea/
+.secrets
+.gitconfig.local

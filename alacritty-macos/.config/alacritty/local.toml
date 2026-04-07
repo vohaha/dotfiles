@@ -1,0 +1,7 @@
+[window]
+padding = { x = 8, y = 4 }
+dynamic_padding = true
+decorations = "Buttonless"
+option_as_alt = "Both"
+startup_mode = "Maximized"
+dynamic_title = true
