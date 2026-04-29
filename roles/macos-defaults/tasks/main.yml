@@ -19,7 +19,7 @@
     cmd: >-
       /usr/libexec/PlistBuddy -c
       "Print :AppleSymbolicHotKeys:64:enabled"
-      {{ ansible_env.HOME }}/Library/Preferences/com.apple.symbolichotkeys.plist
+      {{ ansible_facts['env'].HOME }}/Library/Preferences/com.apple.symbolichotkeys.plist
   register: spotlight_64_state
   changed_when: false
   failed_when: false
@@ -48,7 +48,7 @@
     cmd: >-
       /usr/libexec/PlistBuddy -c
       "Print :AppleSymbolicHotKeys:65:enabled"
-      {{ ansible_env.HOME }}/Library/Preferences/com.apple.symbolichotkeys.plist
+      {{ ansible_facts['env'].HOME }}/Library/Preferences/com.apple.symbolichotkeys.plist
   register: spotlight_65_state
   changed_when: false
   failed_when: false

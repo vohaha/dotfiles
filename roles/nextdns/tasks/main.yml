@@ -47,7 +47,7 @@
       - nextdns
       - install
       - -profile
-      - "{{ ansible_env.NEXTDNS_PROFILE }}"
+      - "{{ ansible_facts['env'].NEXTDNS_PROFILE }}"
       - -report-client-info
       - -cache-size
       - 10MB
@@ -72,11 +72,11 @@
 
 - name: Update nextdns profile (re-run, profile changed)
   ansible.builtin.command:
-    argv: [nextdns, config, set, -profile, "{{ ansible_env.NEXTDNS_PROFILE }}"]
+    argv: [nextdns, config, set, -profile, "{{ ansible_facts['env'].NEXTDNS_PROFILE }}"]
   become: true
   when:
     - nextdns_conf.stat.exists
-    - current_profile != ansible_env.NEXTDNS_PROFILE
+    - current_profile != ansible_facts['env'].NEXTDNS_PROFILE
   notify: Restart nextdns
 
 - name: "[verify] NextDNS is active"

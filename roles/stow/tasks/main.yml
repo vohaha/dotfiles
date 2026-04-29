@@ -24,7 +24,7 @@
 # ── Common packages ───────────────────────────────────────────────────────────
 - name: Stow common packages
   ansible.builtin.command:
-    cmd: stow --adopt {{ item }} -t {{ ansible_env.HOME }}
+    cmd: stow --adopt {{ item }} -t {{ ansible_facts['env'].HOME }}
     chdir: "{{ playbook_dir }}"
   loop: "{{ stow_common_packages }}"
   changed_when: false
@@ -32,13 +32,13 @@
 # ── Platform-specific packages ────────────────────────────────────────────────
 - name: Stow platform-specific alacritty overrides
   ansible.builtin.command:
-    cmd: stow --adopt alacritty-{{ dotfiles_platform }} -t {{ ansible_env.HOME }}
+    cmd: stow --adopt alacritty-{{ dotfiles_platform }} -t {{ ansible_facts['env'].HOME }}
     chdir: "{{ playbook_dir }}"
   changed_when: false
 
 - name: Stow alacritty (shared config)
   ansible.builtin.command:
-    cmd: stow --adopt alacritty -t {{ ansible_env.HOME }}
+    cmd: stow --adopt alacritty -t {{ ansible_facts['env'].HOME }}
     chdir: "{{ playbook_dir }}"
   changed_when: false
 
@@ -63,7 +63,7 @@
 
 - name: "[verify] Stat expected stow symlinks"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/{{ item }}"
+    path: "{{ ansible_facts['env'].HOME }}/{{ item }}"
   loop:
     - .zshrc
     - .gitconfig

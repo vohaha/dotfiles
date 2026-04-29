@@ -13,5 +13,5 @@
     - role: nextdns
       tags: [nextdns]
       when:
-        - ansible_env.NEXTDNS_PROFILE is defined
-        - ansible_env.NEXTDNS_PROFILE | length > 0
+        - ansible_facts['env'].NEXTDNS_PROFILE is defined
+        - ansible_facts['env'].NEXTDNS_PROFILE | length > 0
