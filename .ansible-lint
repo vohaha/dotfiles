@@ -1,0 +1,29 @@
+---
+# ansible-lint config: enforce `basic` profile in CI; skip patterns that
+# would require role-wide refactors and aren't load-bearing for correctness.
+# To ratchet up: chip away at skip_list as roles get touched.
+
+profile: basic
+
+# Excluded paths
+exclude_paths:
+  - .git/
+  - .github/
+
+# Skipped rules (with rationale — remove an entry once the underlying
+# violations are cleaned up).
+skip_list:
+  # Roles register vars without role-name prefix (e.g. `register: verify`,
+  # `register: hook_files`). Renaming would touch every role at once.
+  - var-naming[no-role-prefix]
+  # `macos-defaults` uses a hyphen; renaming the directory affects site.yml
+  # and any external references. Cosmetic — defer to a focused refactor.
+  - role-name
+  # `git checkout --` in roles/stow/tasks/main.yml is the deliberate
+  # post-`stow --adopt` restore; ansible.builtin.git wraps clones, not
+  # working-tree restores.
+  - command-instead-of-module
+  # Three nextdns command tasks (install/register/update profile) mutate
+  # state but don't surface a clean changed/not-changed signal. Worth
+  # revisiting when the role gets its next pass.
+  - no-changed-when

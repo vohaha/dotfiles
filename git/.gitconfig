@@ -1,0 +1,17 @@
+[user]
+	name = Volodymyr Kondratenko
+	email = dev@volodymyrkondratenko.com
+
+[init]
+	defaultBranch = main
+
+[commit]
+	template = ~/.gitmessage
+
+[core]
+	excludesfile = ~/.gitignore
+
+# Machine-local overrides (credential helpers, LFS, work email, etc.)
+# Tools like GCM and git-lfs write here instead of polluting the dotfiles repo.
+[include]
+	path = ~/.gitconfig.local

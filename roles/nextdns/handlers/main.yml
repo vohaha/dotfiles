@@ -1,0 +1,5 @@
+---
+- name: Restart nextdns
+  ansible.builtin.command:
+    argv: [nextdns, restart]
+  become: true

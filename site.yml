@@ -1,0 +1,17 @@
+---
+- name: Bootstrap dotfiles
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  roles:
+    - packages
+    - role: macos-defaults
+      when: ansible_facts['system'] == 'Darwin'
+    - stow
+    - hooks
+    - role: nextdns
+      tags: [nextdns]
+      when:
+        - ansible_env.NEXTDNS_PROFILE is defined
+        - ansible_env.NEXTDNS_PROFILE | length > 0

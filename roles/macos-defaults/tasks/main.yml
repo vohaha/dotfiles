@@ -1,0 +1,73 @@
+---
+# ── Keyboard shortcuts ───────────────────────────────────────────────────────
+# macOS symbolic hotkey IDs:
+#   64 = Show Spotlight search (default: Cmd+Space)
+#   65 = Show Finder search window (default: Opt+Cmd+Space)
+#
+# Parameters: [ASCII code, key code, modifier flags]
+#   32 = space (ASCII), 49 = space (key code)
+#   1048576 = Cmd, 1572864 = Opt+Cmd
+#
+# We use -dict-add to merge into the existing AppleSymbolicHotKeys dict
+# rather than replacing it entirely (which would destroy all other shortcuts).
+#
+# PlistBuddy reads the on-disk plist directly — gives us accurate before/after
+# comparison so changed_when reflects reality.
+
+- name: Read Spotlight search shortcut state (64)
+  ansible.builtin.command:
+    cmd: >-
+      /usr/libexec/PlistBuddy -c
+      "Print :AppleSymbolicHotKeys:64:enabled"
+      {{ ansible_env.HOME }}/Library/Preferences/com.apple.symbolichotkeys.plist
+  register: spotlight_64_state
+  changed_when: false
+  failed_when: false
+
+- name: Disable Spotlight search shortcut (Cmd+Space → Raycast)
+  ansible.builtin.command:
+    cmd: >-
+      defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64
+      '<dict>
+        <key>enabled</key><false/>
+        <key>value</key><dict>
+          <key>parameters</key><array>
+            <integer>32</integer>
+            <integer>49</integer>
+            <integer>1048576</integer>
+          </array>
+          <key>type</key><string>standard</string>
+        </dict>
+      </dict>'
+  when: spotlight_64_state.stdout != 'false'
+  changed_when: true
+  notify: Activate keyboard settings
+
+- name: Read Finder search shortcut state (65)
+  ansible.builtin.command:
+    cmd: >-
+      /usr/libexec/PlistBuddy -c
+      "Print :AppleSymbolicHotKeys:65:enabled"
+      {{ ansible_env.HOME }}/Library/Preferences/com.apple.symbolichotkeys.plist
+  register: spotlight_65_state
+  changed_when: false
+  failed_when: false
+
+- name: Disable Finder search shortcut (Opt+Cmd+Space)
+  ansible.builtin.command:
+    cmd: >-
+      defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 65
+      '<dict>
+        <key>enabled</key><false/>
+        <key>value</key><dict>
+          <key>parameters</key><array>
+            <integer>32</integer>
+            <integer>49</integer>
+            <integer>1572864</integer>
+          </array>
+          <key>type</key><string>standard</string>
+        </dict>
+      </dict>'
+  when: spotlight_65_state.stdout != 'false'
+  changed_when: true
+  notify: Activate keyboard settings

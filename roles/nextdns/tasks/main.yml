@@ -1,0 +1,107 @@
+---
+# Configures NextDNS as system-wide DoH resolver.
+#
+# Requires NEXTDNS_PROFILE env var (sourced from ~/.secrets).
+# Role is gated in site.yml: if env var is missing, role is skipped.
+# See docs/digital-life.md §DNS.
+
+- name: Check for WSL2
+  ansible.builtin.slurp:
+    src: /proc/version
+  register: proc_version
+  when: ansible_facts['system'] == "Linux"
+  failed_when: false
+
+- name: Skip NextDNS on WSL2
+  ansible.builtin.meta: end_host
+  when:
+    - ansible_facts['system'] == "Linux"
+    - proc_version.content is defined
+    - "'microsoft' in (proc_version.content | b64decode | lower)"
+
+- name: Install nextdns (Linux, via upstream script)
+  ansible.builtin.shell: |
+    set -o pipefail
+    sh -c "$(curl -sL https://nextdns.io/install)"
+  args:
+    creates: /usr/bin/nextdns
+    executable: /bin/bash
+  become: true
+  when: ansible_facts['system'] == "Linux"
+
+- name: Assert nextdns binary is present (macOS comes from Brewfile)
+  ansible.builtin.command: which nextdns
+  register: nextdns_which
+  changed_when: false
+  check_mode: false
+  failed_when: nextdns_which.rc != 0
+
+- name: Check if nextdns is already registered
+  ansible.builtin.stat:
+    path: /etc/nextdns.conf
+  register: nextdns_conf
+
+- name: Register nextdns (first-time install)
+  ansible.builtin.command:
+    argv:
+      - nextdns
+      - install
+      - -profile
+      - "{{ ansible_env.NEXTDNS_PROFILE }}"
+      - -report-client-info
+      - -cache-size
+      - 10MB
+      - -auto-activate
+  become: true
+  when: not nextdns_conf.stat.exists
+
+- name: Read current profile from /etc/nextdns.conf
+  ansible.builtin.slurp:
+    src: /etc/nextdns.conf
+  register: nextdns_conf_content
+  when: nextdns_conf.stat.exists
+  become: true
+
+- name: Extract current profile id
+  ansible.builtin.set_fact:
+    current_profile: >-
+      {{ (nextdns_conf_content.content | b64decode
+          | regex_search('profile\s+(\S+)', '\1')
+          | default([''])) | first }}
+  when: nextdns_conf.stat.exists
+
+- name: Update nextdns profile (re-run, profile changed)
+  ansible.builtin.command:
+    argv: [nextdns, config, set, -profile, "{{ ansible_env.NEXTDNS_PROFILE }}"]
+  become: true
+  when:
+    - nextdns_conf.stat.exists
+    - current_profile != ansible_env.NEXTDNS_PROFILE
+  notify: Restart nextdns
+
+- name: "[verify] NextDNS is active"
+  # test.nextdns.io issues a 302 to a client-scoped subdomain carrying the
+  # actual JSON payload — -L is required to follow that redirect.
+  # Only status==ok is checked: the JSON "profile" field is NextDNS's
+  # internal ID (e.g. fp4f14...), not the short ID from the dashboard URL
+  # that we put in NEXTDNS_PROFILE. Profile-vs-env consistency is already
+  # enforced upstream against /etc/nextdns.conf.
+  ansible.builtin.command:
+    argv: [curl, -sL, --max-time, "5", https://test.nextdns.io]
+  register: verify
+  changed_when: false
+  check_mode: false
+  retries: 10
+  delay: 3
+  until:
+    - verify.rc == 0
+    - verify.stdout | length > 0
+    - (verify.stdout | from_json).status | default('') == "ok"
+  tags: verify
+
+- name: "[verify] Report verification result"
+  ansible.builtin.debug:
+    msg: >-
+      NextDNS active via {{ (verify.stdout | from_json).protocol }},
+      device={{ (verify.stdout | from_json).deviceName | default('?') }}
+  tags: verify

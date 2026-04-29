@@ -1,0 +1,44 @@
+---
+# ── Linux apt prerequisites (before Homebrew works on Debian/Ubuntu) ─────────
+- name: Install apt prerequisites
+  ansible.builtin.apt:
+    name:
+      - build-essential
+      - curl
+      - file
+      - git
+      - procps
+    state: present
+  become: true
+  when: ansible_facts['os_family'] == "Debian"
+
+# ── Homebrew bundle (macOS and Linux/WSL2) ────────────────────────────────────
+- name: Install packages via brew bundle
+  ansible.builtin.command:
+    cmd: brew bundle --file={{ ansible_env.HOME }}/Brewfile --no-upgrade
+    chdir: "{{ playbook_dir }}"
+  changed_when: false
+  when: ansible_facts['system'] in ["Darwin", "Linux"]
+
+# ── Verify (read-only, runs under `bootstrap.sh doctor`) ─────────────────────
+# Cross-platform formulas only — casks are macOS-only and skip silently
+# on Linux, so we don't include them here.
+- name: "[verify] Core CLI tools resolvable on PATH"
+  ansible.builtin.command: "which {{ item }}"
+  loop:
+    - brew
+    - ansible
+    - stow
+    - git
+    - gh
+    - tmux
+    - fzf
+    - fd
+    - rg
+    - bat
+    - lazygit
+    - nvim
+    - yq
+  changed_when: false
+  check_mode: false
+  tags: verify

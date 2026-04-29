@@ -1,0 +1,5 @@
+---
+- name: Activate keyboard settings
+  ansible.builtin.command:
+    cmd: /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+  changed_when: false

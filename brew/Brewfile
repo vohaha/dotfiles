@@ -1,0 +1,91 @@
+# ── Taps ─────────────────────────────────────────────────────────────────────
+tap "homebrew/cask-fonts"
+tap "jesseduffield/lazygit"
+
+# ── Shell & terminal ──────────────────────────────────────────────────────────
+brew "bash"                    # cross-platform fallback shell
+brew "bash-completion@2"
+brew "stow"                    # dotfiles management
+brew "tmux"                    # terminal multiplexer
+brew "fzf"                     # fuzzy finder
+brew "bat"                     # better cat
+brew "fd"                      # better find
+brew "ripgrep"                 # better grep
+brew "tree"                    # directory tree
+brew "htop"
+brew "yq"                      # yaml processor
+brew "yamllint"
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+brew "git"
+brew "gh"                      # GitHub CLI
+brew "lazygit"                 # git TUI
+brew "git-filter-repo"
+
+# ── Editors ───────────────────────────────────────────────────────────────────
+brew "neovim"                  # LazyVim — available, deferred (Linux primary)
+brew "luarocks"                # neovim lua dependency
+cask "zed"
+
+# ── Node ──────────────────────────────────────────────────────────────────────
+brew "fnm"                     # node version manager
+
+# ── Go ────────────────────────────────────────────────────────────────────────
+brew "go"
+brew "golang-migrate"
+go "github.com/go-delve/delve/cmd/dlv"    # go debugger
+
+# ── DevOps & infra ────────────────────────────────────────────────────────────
+brew "ansible"
+brew "helm"
+brew "k3d"
+brew "kubernetes-cli"
+brew "podman"
+brew "awscli"
+cask "docker-desktop"
+
+# ── Misc dev tools ────────────────────────────────────────────────────────────
+brew "deno"
+brew "livekit"
+brew "nmap"
+brew "imagemagick"
+cask "db-browser-for-sqlite"
+cask "git-credential-manager"
+
+# ── Networking ────────────────────────────────────────────────────────────────
+brew "nextdns"                 # encrypted DNS with filtering; see docs/digital-life.md §DNS
+
+# ── CLI utilities ─────────────────────────────────────────────────────────────
+brew "foreman"
+brew "neo4j-mcp"
+brew "bitwarden-cli"
+
+# ── Terminal ──────────────────────────────────────────────────────────────────
+cask "alacritty"
+
+# ── Fonts ─────────────────────────────────────────────────────────────────────
+cask "font-hack-nerd-font"
+cask "font-jetbrains-mono-nerd-font"
+
+# ── Apps ──────────────────────────────────────────────────────────────────────
+cask "bitwarden"
+cask "obsidian"
+cask "espanso"                 # text expander
+cask "ukelele"                 # keyboard layout tool
+cask "t3-code"
+cask "gimp"
+cask "rawtherapee"
+
+# ── Removed (dead weight) ─────────────────────────────────────────────────────
+# nvm        — replaced by fnm
+# n          — replaced by fnm
+# warp       — second terminal, using Alacritty
+# emacs-app  — unused
+# zed@preview — prefer stable
+# tpm        — tmux plugin manager, no plugins in use yet
+# arc        — second browser, using Safari as primary
+# vagrant    — unused
+# aerospace  — tiling WM, tried 2026-04; approach is nice but daily-use friction
+#              (subtle focus/layout inconveniences) outweighed benefit — native macOS
+# numi-cli   — removed 2026-04
+# microsoft-edge — removed 2026-04

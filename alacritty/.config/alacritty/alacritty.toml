@@ -1,0 +1,60 @@
+[general]
+import = ["~/.config/alacritty/local.toml"]
+
+[env]
+TERM = "xterm-256color"
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+[font]
+size = 18
+normal.family = "JetBrainsMono Nerd Font"
+
+[cursor]
+style = { shape = "Beam", blinking = "On" }
+unfocused_hollow = true
+
+[mouse]
+hide_when_typing = true
+
+[selection]
+save_to_clipboard = true
+
+[terminal]
+osc52 = "OnlyCopy"
+
+[bell]
+duration = 0
+
+[keyboard]
+bindings = [
+    { key = "Return", mods = "Shift", chars = "\n" },
+    { key = "Left",   mods = "Control", chars = "\u001b[1;5D" },
+    { key = "Right",  mods = "Control", chars = "\u001b[1;5C" },
+    { key = "Left",   mods = "Alt",     chars = "\u001bb" },
+    { key = "Right",  mods = "Alt",     chars = "\u001bf" },
+    # tmux window switching: ctrl+N → ESC+N → tmux M-N bindings
+    # (ctrl+number keys are ambiguous in terminal land — ctrl+3 = ctrl+s byte,
+    #  ctrl+1 = ctrl+q byte — so we remap at the emulator level to unambiguous ESC+digit)
+    { key = "1", mods = "Control", chars = "\u001b1" },
+    { key = "2", mods = "Control", chars = "\u001b2" },
+    { key = "3", mods = "Control", chars = "\u001b3" },
+    { key = "4", mods = "Control", chars = "\u001b4" },
+    { key = "5", mods = "Control", chars = "\u001b5" },
+    { key = "6", mods = "Control", chars = "\u001b6" },
+    { key = "7", mods = "Control", chars = "\u001b7" },
+    { key = "8", mods = "Control", chars = "\u001b8" },
+    { key = "9", mods = "Control", chars = "\u001b9" },
+    # cmd+N → same ESC+N so tmux window switching works with either modifier
+    { key = "1", mods = "Super", chars = "\u001b1" },
+    { key = "2", mods = "Super", chars = "\u001b2" },
+    { key = "3", mods = "Super", chars = "\u001b3" },
+    { key = "4", mods = "Super", chars = "\u001b4" },
+    { key = "5", mods = "Super", chars = "\u001b5" },
+    { key = "6", mods = "Super", chars = "\u001b6" },
+    { key = "7", mods = "Super", chars = "\u001b7" },
+    { key = "8", mods = "Super", chars = "\u001b8" },
+    { key = "9", mods = "Super", chars = "\u001b9" },
+]

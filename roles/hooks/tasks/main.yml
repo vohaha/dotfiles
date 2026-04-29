@@ -1,0 +1,42 @@
+---
+- name: Find hook scripts
+  ansible.builtin.find:
+    paths: "{{ playbook_dir }}/scripts/hooks"
+    file_type: file
+  register: hook_files
+
+- name: Install git hooks
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ playbook_dir }}/.git/hooks/{{ item.path | basename }}"
+    mode: "0755"
+  loop: "{{ hook_files.files }}"
+
+# ── Verify (read-only, runs under `bootstrap.sh doctor`) ─────────────────────
+- name: "[verify] Discover expected hook scripts"
+  ansible.builtin.find:
+    paths: "{{ playbook_dir }}/scripts/hooks"
+    file_type: file
+  register: expected_hooks
+  tags: verify
+
+- name: "[verify] Stat installed hooks"
+  ansible.builtin.stat:
+    path: "{{ playbook_dir }}/.git/hooks/{{ item.path | basename }}"
+  loop: "{{ expected_hooks.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  register: installed_hook_stats
+  changed_when: false
+  tags: verify
+
+- name: "[verify] Assert each hook is installed and executable"
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.executable | default(false)
+    fail_msg: "Hook missing or not executable: {{ item.item.path | basename }}"
+  loop: "{{ installed_hook_stats.results }}"
+  loop_control:
+    label: "{{ item.item.path | basename }}"
+  tags: verify

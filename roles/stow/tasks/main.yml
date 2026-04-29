@@ -1,0 +1,91 @@
+---
+- name: Set platform fact
+  ansible.builtin.set_fact:
+    dotfiles_platform: >-
+      {{
+        'macos' if ansible_facts['system'] == 'Darwin' else 'linux'
+      }}
+
+- name: Define stow package lists
+  ansible.builtin.set_fact:
+    stow_common_packages:
+      - brew
+      - shell
+      - git
+      - tmux
+      - zed
+      - nvim
+    stow_all_packages: >-
+      {{
+        ['brew', 'shell', 'git', 'tmux', 'zed', 'nvim',
+         'alacritty', 'alacritty-' + dotfiles_platform]
+      }}
+
+# ── Common packages ───────────────────────────────────────────────────────────
+- name: Stow common packages
+  ansible.builtin.command:
+    cmd: stow --adopt {{ item }} -t {{ ansible_env.HOME }}
+    chdir: "{{ playbook_dir }}"
+  loop: "{{ stow_common_packages }}"
+  changed_when: false
+
+# ── Platform-specific packages ────────────────────────────────────────────────
+- name: Stow platform-specific alacritty overrides
+  ansible.builtin.command:
+    cmd: stow --adopt alacritty-{{ dotfiles_platform }} -t {{ ansible_env.HOME }}
+    chdir: "{{ playbook_dir }}"
+  changed_when: false
+
+- name: Stow alacritty (shared config)
+  ansible.builtin.command:
+    cmd: stow --adopt alacritty -t {{ ansible_env.HOME }}
+    chdir: "{{ playbook_dir }}"
+  changed_when: false
+
+# ── Restore repo versions after --adopt ──────────────────────────────────────
+# Scoped to package dirs only. Must not touch uncommitted work in
+# roles/, site.yml, bootstrap.sh, AGENTS.md, etc.
+- name: Restore stow package versions after --adopt
+  ansible.builtin.command:
+    cmd: git checkout -- {{ item }}/
+    chdir: "{{ playbook_dir }}"
+  loop: "{{ stow_all_packages }}"
+  changed_when: false
+
+# ── Verify (read-only, runs under `bootstrap.sh doctor`) ─────────────────────
+- name: "[verify] Set platform fact"
+  ansible.builtin.set_fact:
+    dotfiles_platform: >-
+      {{
+        'macos' if ansible_facts['system'] == 'Darwin' else 'linux'
+      }}
+  tags: verify
+
+- name: "[verify] Stat expected stow symlinks"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/{{ item }}"
+  loop:
+    - .zshrc
+    - .gitconfig
+    - .tmux.conf
+    - .config/alacritty/alacritty.toml
+    - .config/alacritty/local.toml
+    - .config/nvim/init.lua
+  register: stow_link_stats
+  changed_when: false
+  tags: verify
+
+- name: "[verify] Assert each target is a symlink into the repo"
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.islnk
+      - playbook_dir in (item.stat.lnk_source | default(''))
+    fail_msg: >-
+      Expected symlink ~/{{ item.item }} into {{ playbook_dir }};
+      exists={{ item.stat.exists }}, islnk={{ item.stat.islnk | default(false) }},
+      lnk_source={{ item.stat.lnk_source | default('<missing>') }}
+  loop: "{{ stow_link_stats.results }}"
+  loop_control:
+    label: "~/{{ item.item }}"
+  tags: verify

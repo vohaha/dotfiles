@@ -1,0 +1,45 @@
+---
+name: bootstrap
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly macOS smoke test (Mondays 06:00 UTC). PR/push runs only on Linux
+    # because macOS runners are ~10x billing rate; weekly catch-up is enough
+    # to surface macOS-specific drift before it bites a fresh install.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: bootstrap-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ubuntu:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install brew formulas via bootstrap
+        run: ./bootstrap.sh install --non-interactive
+
+      - name: Verify with doctor
+        run: ./bootstrap.sh doctor
+
+  macos:
+    # Schedule + manual dispatch only — macOS runners are expensive.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install brew formulas via bootstrap
+        run: ./bootstrap.sh install --non-interactive
+
+      - name: Verify with doctor
+        run: ./bootstrap.sh doctor
