@@ -1,0 +1,47 @@
+# ── Font ─────────────────────────────────────────────────────────────────────
+font-family = JetBrainsMono Nerd Font
+font-size = 18
+
+# ── Cursor ────────────────────────────────────────────────────────────────────
+cursor-style = bar
+cursor-style-blink = true
+
+# ── Shell — launch into tmux (same as Alacritty) ─────────────────────────────
+command = /opt/homebrew/bin/tmux new-session -A -s main
+
+# ── Window ────────────────────────────────────────────────────────────────────
+window-padding-x = 8
+window-padding-y = 4
+macos-titlebar-style = hidden
+window-save-state = always
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+macos-option-as-alt = true
+
+# ── Clipboard ────────────────────────────────────────────────────────────────
+clipboard-read = allow
+clipboard-write = allow
+# OSC 52 (copy from tmux/SSH) — matches Alacritty osc52 = "OnlyCopy"
+clipboard-paste-protection = true
+
+# ── Key bindings — tmux window switching ─────────────────────────────────────
+# Mirrors Alacritty: ctrl+N and cmd+N both send ESC+N so tmux M-N bindings fire.
+# (ctrl+number is ambiguous in terminals; remapping at emulator level is the fix)
+keybind = ctrl+one=text:\x1b1
+keybind = ctrl+two=text:\x1b2
+keybind = ctrl+three=text:\x1b3
+keybind = ctrl+four=text:\x1b4
+keybind = ctrl+five=text:\x1b5
+keybind = ctrl+six=text:\x1b6
+keybind = ctrl+seven=text:\x1b7
+keybind = ctrl+eight=text:\x1b8
+keybind = ctrl+nine=text:\x1b9
+keybind = super+one=text:\x1b1
+keybind = super+two=text:\x1b2
+keybind = super+three=text:\x1b3
+keybind = super+four=text:\x1b4
+keybind = super+five=text:\x1b5
+keybind = super+six=text:\x1b6
+keybind = super+seven=text:\x1b7
+keybind = super+eight=text:\x1b8
+keybind = super+nine=text:\x1b9

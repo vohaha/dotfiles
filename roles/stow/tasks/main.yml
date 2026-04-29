@@ -15,9 +15,10 @@
       - tmux
       - zed
       - nvim
+      - ghostty
     stow_all_packages: >-
       {{
-        ['brew', 'shell', 'git', 'tmux', 'zed', 'nvim',
+        ['brew', 'shell', 'git', 'tmux', 'zed', 'nvim', 'ghostty',
          'alacritty', 'alacritty-' + dotfiles_platform]
       }}
 

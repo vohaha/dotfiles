@@ -63,6 +63,7 @@ brew "bitwarden-cli"
 
 # ── Terminal ──────────────────────────────────────────────────────────────────
 cask "alacritty"
+cask "ghostty"                 # testing — native macOS rendering, may replace Alacritty
 
 # ── Fonts ─────────────────────────────────────────────────────────────────────
 cask "font-hack-nerd-font"
