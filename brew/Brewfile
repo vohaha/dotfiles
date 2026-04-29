@@ -7,6 +7,7 @@ brew "bash"                    # cross-platform fallback shell
 brew "bash-completion@2"
 brew "stow"                    # dotfiles management
 brew "tmux"                    # terminal multiplexer
+brew "starship"                # cross-shell prompt
 brew "fzf"                     # fuzzy finder
 brew "bat"                     # better cat
 brew "fd"                      # better find

@@ -1,6 +1,6 @@
 # ── Oh My Zsh ────────────────────────────────────────────────────────────────
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="macovsky"
+ZSH_THEME=""  # disabled — starship handles the prompt
 DISABLE_AUTO_TITLE="true"
 plugins=(git)
 source "$ZSH/oh-my-zsh.sh"
@@ -68,9 +68,13 @@ alias zsf="cd ~; ${EDITOR:-nvim} .zshrc"
 alias vif="cd ~/.config/nvim; ${EDITOR:-nvim} ."
 alias tmf="cd ~/.config/tmux; ${EDITOR:-nvim} ."
 alias alf="cd ~/.config/alacritty; ${EDITOR:-nvim} ."
+alias stf="cd ~/.config; ${EDITOR:-nvim} starship.toml"
 
 # ── Aliases — macOS specific ──────────────────────────────────────────────────
 if [[ "$(uname -s)" == "Darwin" ]]; then
     alias fonts="ls /Library/Fonts /System/Library/Fonts ~/Library/Fonts"
     alias icd="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 fi
+
+# ── Starship ──────────────────────────────────────────────────────────────────
+command -v starship &>/dev/null && eval "$(starship init zsh)"
