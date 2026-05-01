@@ -53,6 +53,45 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # ── Secrets ───────────────────────────────────────────────────────────────────
 [ -f "$HOME/.secrets" ] && source "$HOME/.secrets"
 
+ghostty_fuzzy_cd_on_start() {
+    [[ -o interactive ]] || return
+    [[ -t 0 && -t 1 ]] || return
+    [[ "${TERM_PROGRAM:l}" == "ghostty" ]] || return
+    [[ -z "${GHOSTTY_FUZZY_CD_DONE:-}" ]] || return
+    [[ -z "${GHOSTTY_FUZZY_CD_DISABLE:-}" ]] || return
+    command -v fzf &>/dev/null || return
+
+    export GHOSTTY_FUZZY_CD_DONE=1
+
+    local dir
+    if command -v fd &>/dev/null; then
+        dir="$(
+            fd . "$HOME" \
+                --type d \
+                --hidden \
+                --follow \
+                --exclude .cache \
+                --exclude .git \
+                --exclude .Trash \
+                --exclude Library \
+                --exclude node_modules \
+                2>/dev/null |
+                fzf --prompt="cd> " --height=40% --reverse --select-1 --exit-0
+        )"
+    else
+        dir="$(
+            find "$HOME" \
+                \( -name .cache -o -name .git -o -name .Trash -o -name Library -o -name node_modules \) -prune \
+                -o -type d -print 2>/dev/null |
+                fzf --prompt="cd> " --height=40% --reverse --select-1 --exit-0
+        )"
+    fi
+
+    [[ -n "$dir" && -d "$dir" ]] && cd "$dir"
+}
+ghostty_fuzzy_cd_on_start
+unset -f ghostty_fuzzy_cd_on_start
+
 # ── Clipboard ─────────────────────────────────────────────────────────────────
 # OSC 52: pipe stdout to local clipboard (works over SSH + tmux)
 copy() { printf '\033]52;c;%s\007' "$(cat -- "${@:--}" | base64)"; }
