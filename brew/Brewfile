@@ -72,6 +72,7 @@ cask "font-jetbrains-mono-nerd-font"
 # ── Apps ──────────────────────────────────────────────────────────────────────
 cask "bitwarden"
 cask "obsidian"
+cask "localsend"               # local network file sharing
 cask "espanso"                 # text expander
 cask "ukelele"                 # keyboard layout tool
 cask "t3-code"

@@ -54,9 +54,11 @@ app_installed() {
         local method="${rest%%:*}"
         local value="${rest#*:}"
         case "$method" in
-            path)  [[ -e "$value" ]] && echo "✓" && return ;;
-            which) has "$value"      && echo "✓" && return ;;
-            *)     [[ -e "$value" ]] && echo "✓" && return ;;
+            path)    [[ -e "$value" ]] && echo "✓" && return ;;
+            which)   has "$value"      && echo "✓" && return ;;
+            flatpak) has flatpak && flatpak info "$value" &>/dev/null && echo "✓" && return ;;
+            winget)  has winget && winget list --id "$value" &>/dev/null && echo "✓" && return ;;
+            *)       [[ -e "$value" ]] && echo "✓" && return ;;
         esac
     done
     echo "✗"
@@ -140,6 +142,10 @@ BITWARDEN_INSTALLED="$(app_installed Bitwarden \
     "macos:path:/Applications/Bitwarden.app" \
     "linux:which:bw" \
     "windows:which:bw") $(has bw && echo "+ cli" || echo "")"
+LOCALSEND_INSTALLED="$(app_installed LocalSend \
+    "macos:path:/Applications/LocalSend.app" \
+    "linux:flatpak:org.localsend.localsend_app" \
+    "windows:winget:LocalSend.LocalSend")"
 
 # Layer 7 — AI CLIs
 CODEX_INSTALLED="$(installed codex)"
@@ -234,6 +240,7 @@ Zed uses vim mode + JetBrains base keymap. Neovim uses LazyVim (available, defer
 |---|---|
 | Obsidian | $OBSIDIAN_INSTALLED installed |
 | Bitwarden | $BITWARDEN_INSTALLED installed |
+| LocalSend | $LOCALSEND_INSTALLED installed |
 
 These are intentionally native per OS — minimal config to capture.
 

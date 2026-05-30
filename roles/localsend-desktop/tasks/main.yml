@@ -1,0 +1,76 @@
+---
+# Installs LocalSend on Linux GUI machines.
+#
+# macOS is handled by the Homebrew cask in brew/Brewfile.
+# Windows is handled by bootstrap-windows.ps1.
+# WSL2 intentionally skips the GUI app; the Windows LocalSend app owns that side.
+
+- name: Check for WSL2
+  ansible.builtin.slurp:
+    src: /proc/version
+  register: proc_version
+  when: ansible_facts['system'] == "Linux"
+  failed_when: false
+  changed_when: false
+  tags: always
+
+- name: Determine LocalSend Desktop install target
+  ansible.builtin.set_fact:
+    localsend_desktop_is_wsl: >-
+      {{
+        ansible_facts['system'] == "Linux"
+        and proc_version.content is defined
+        and 'microsoft' in (proc_version.content | b64decode | lower)
+      }}
+    localsend_desktop_is_ci: >-
+      {{ (ansible_facts['env'].CI | default('')) | length > 0 }}
+  tags: always
+
+- name: Install Flatpak
+  ansible.builtin.package:
+    name: flatpak
+    state: present
+  become: true
+  when:
+    - ansible_facts['system'] == "Linux"
+    - not localsend_desktop_is_wsl
+    - not localsend_desktop_is_ci
+
+- name: Add Flathub remote
+  ansible.builtin.command:
+    argv:
+      - flatpak
+      - remote-add
+      - --if-not-exists
+      - flathub
+      - https://dl.flathub.org/repo/flathub.flatpakrepo
+  changed_when: false
+  when:
+    - ansible_facts['system'] == "Linux"
+    - not localsend_desktop_is_wsl
+    - not localsend_desktop_is_ci
+
+- name: Install LocalSend from Flathub
+  ansible.builtin.command:
+    argv:
+      - flatpak
+      - install
+      - --assumeyes
+      - flathub
+      - org.localsend.localsend_app
+  changed_when: false
+  when:
+    - ansible_facts['system'] == "Linux"
+    - not localsend_desktop_is_wsl
+    - not localsend_desktop_is_ci
+
+- name: "[verify] Check LocalSend Flatpak"
+  ansible.builtin.command:
+    argv: [flatpak, info, org.localsend.localsend_app]
+  changed_when: false
+  check_mode: false
+  when:
+    - ansible_facts['system'] == "Linux"
+    - not localsend_desktop_is_wsl
+    - not localsend_desktop_is_ci
+  tags: verify

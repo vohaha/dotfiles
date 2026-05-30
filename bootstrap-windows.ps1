@@ -98,6 +98,7 @@ Write-Host "`n=== Applications ===" -ForegroundColor Cyan
 Install-WithWinget 'Git.Git'                 'Git'
 Install-WithWinget 'Alacritty.Alacritty'     'Alacritty'
 Install-WithWinget 'Bitwarden.Bitwarden'     'Bitwarden'
+Install-WithWinget 'LocalSend.LocalSend'     'LocalSend'
 Install-WithWinget 'Neovim.Neovim'           'Neovim'
 Install-WithWinget 'Anthropic.ClaudeCode'    'Claude Code'
 
