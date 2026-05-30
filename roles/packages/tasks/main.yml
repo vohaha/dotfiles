@@ -15,7 +15,11 @@
 # ── Homebrew bundle (macOS and Linux/WSL2) ────────────────────────────────────
 - name: Install packages via brew bundle
   ansible.builtin.command:
-    cmd: brew bundle --file={{ ansible_facts['env'].HOME }}/Brewfile --no-upgrade
+    argv:
+      - brew
+      - bundle
+      - "--file={{ playbook_dir }}/brew/Brewfile"
+      - --no-upgrade
     chdir: "{{ playbook_dir }}"
   changed_when: false
   when: ansible_facts['system'] in ["Darwin", "Linux"]

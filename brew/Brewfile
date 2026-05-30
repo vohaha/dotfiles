@@ -1,6 +1,9 @@
 # ── Taps ─────────────────────────────────────────────────────────────────────
-tap "homebrew/cask-fonts"
 tap "jesseduffield/lazygit"
+
+if OS.mac?
+  tap "homebrew/cask-fonts"
+end
 
 # ── Shell & terminal ──────────────────────────────────────────────────────────
 brew "bash"                    # cross-platform fallback shell
@@ -26,7 +29,9 @@ brew "git-filter-repo"
 # ── Editors ───────────────────────────────────────────────────────────────────
 brew "neovim"                  # LazyVim — available, deferred (Linux primary)
 brew "luarocks"                # neovim lua dependency
-cask "zed"
+if OS.mac?
+  cask "zed"
+end
 
 # ── Node ──────────────────────────────────────────────────────────────────────
 brew "fnm"                     # node version manager
@@ -43,15 +48,19 @@ brew "k3d"
 brew "kubernetes-cli"
 brew "podman"
 brew "awscli"
-cask "docker-desktop"
+if OS.mac?
+  cask "docker-desktop"
+end
 
 # ── Misc dev tools ────────────────────────────────────────────────────────────
 brew "deno"
 brew "livekit"
 brew "nmap"
 brew "imagemagick"
-cask "db-browser-for-sqlite"
-cask "git-credential-manager"
+if OS.mac?
+  cask "db-browser-for-sqlite"
+  cask "git-credential-manager"
+end
 
 # ── Networking ────────────────────────────────────────────────────────────────
 brew "nextdns"                 # encrypted DNS with filtering; see docs/digital-life.md §DNS
@@ -62,22 +71,28 @@ brew "neo4j-mcp"
 brew "bitwarden-cli"
 
 # ── Terminal ──────────────────────────────────────────────────────────────────
-cask "alacritty"
-cask "ghostty"                 # testing — native macOS rendering, may replace Alacritty
+if OS.mac?
+  cask "alacritty"
+  cask "ghostty"               # testing — native macOS rendering, may replace Alacritty
+end
 
 # ── Fonts ─────────────────────────────────────────────────────────────────────
-cask "font-hack-nerd-font"
-cask "font-jetbrains-mono-nerd-font"
+if OS.mac?
+  cask "font-hack-nerd-font"
+  cask "font-jetbrains-mono-nerd-font"
+end
 
 # ── Apps ──────────────────────────────────────────────────────────────────────
-cask "bitwarden"
-cask "obsidian"
-cask "localsend"               # local network file sharing
-cask "espanso"                 # text expander
-cask "ukelele"                 # keyboard layout tool
-cask "t3-code"
-cask "gimp"
-cask "rawtherapee"
+if OS.mac?
+  cask "bitwarden"
+  cask "obsidian"
+  cask "localsend"             # local network file sharing
+  cask "espanso"               # text expander
+  cask "ukelele"               # keyboard layout tool
+  cask "t3-code"
+  cask "gimp"
+  cask "rawtherapee"
+end
 
 # ── Removed (dead weight) ─────────────────────────────────────────────────────
 # nvm        — replaced by fnm
