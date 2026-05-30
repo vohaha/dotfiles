@@ -57,10 +57,12 @@ Shells point `SSH_AUTH_SOCK` at the Bitwarden SSH agent socket. On macOS, the
 Bitwarden cask is installed by Homebrew. On Windows, `bootstrap-windows.ps1`
 installs Bitwarden, disables the competing Windows OpenSSH Authentication Agent
 service, and writes Windows OpenSSH settings to `~/.gitconfig.local`.
+On Linux GUI machines, the Ansible playbook installs Bitwarden Desktop from
+Flathub. WSL2 skips the Linux GUI app and uses the Windows-side Bitwarden app.
 
 The Bitwarden desktop app still has to be unlocked and configured once:
 Settings -> Enable SSH agent. Linux shells support the native, Snap, and Flatpak
-socket paths, but the desktop app install remains distro-specific.
+socket paths.
 
 ## Tools
 

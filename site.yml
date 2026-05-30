@@ -6,6 +6,8 @@
 
   roles:
     - packages
+    - role: bitwarden-desktop
+      when: ansible_facts['system'] == 'Linux'
     - role: ai-clis
       tags: [ai-clis]
     - role: macos-defaults
