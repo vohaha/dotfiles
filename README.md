@@ -51,6 +51,17 @@ These are **never committed** — create them on each machine after bootstrap:
 `bootstrap.sh` installs Codex CLI and Claude Code through the `ai-clis` Ansible role.
 Authentication stays machine-local: sign in interactively or put API keys in `~/.secrets`.
 
+## Bitwarden SSH Agent
+
+Shells point `SSH_AUTH_SOCK` at the Bitwarden SSH agent socket. On macOS, the
+Bitwarden cask is installed by Homebrew. On Windows, `bootstrap-windows.ps1`
+installs Bitwarden, disables the competing Windows OpenSSH Authentication Agent
+service, and writes Windows OpenSSH settings to `~/.gitconfig.local`.
+
+The Bitwarden desktop app still has to be unlocked and configured once:
+Settings -> Enable SSH agent. Linux shells support the native, Snap, and Flatpak
+socket paths, but the desktop app install remains distro-specific.
+
 ## Tools
 
 Install all tools via Homebrew:

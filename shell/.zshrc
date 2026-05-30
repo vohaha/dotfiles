@@ -53,6 +53,39 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # ── Secrets ───────────────────────────────────────────────────────────────────
 [ -f "$HOME/.secrets" ] && source "$HOME/.secrets"
 
+# ── SSH agent — Bitwarden ─────────────────────────────────────────────────────
+bitwarden_ssh_agent() {
+    [[ -z "${SSH_CONNECTION:-}" ]] || return
+
+    local sock=""
+    if [[ -n "${BITWARDEN_SSH_AUTH_SOCK:-}" ]]; then
+        sock="$BITWARDEN_SSH_AUTH_SOCK"
+    elif [[ "$(uname -s)" == "Darwin" ]]; then
+        local candidate
+        for candidate in \
+            "$HOME/.bitwarden-ssh-agent.sock" \
+            "$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+        do
+            [[ -S "$candidate" ]] && sock="$candidate" && break
+        done
+        [[ -z "$sock" ]] && sock="$HOME/.bitwarden-ssh-agent.sock"
+    else
+        local candidate
+        for candidate in \
+            "$HOME/.bitwarden-ssh-agent.sock" \
+            "$HOME/snap/bitwarden/current/.bitwarden-ssh-agent.sock" \
+            "$HOME/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock"
+        do
+            [[ -S "$candidate" ]] && sock="$candidate" && break
+        done
+        [[ -z "$sock" ]] && sock="$HOME/.bitwarden-ssh-agent.sock"
+    fi
+
+    [[ -n "$sock" ]] && export SSH_AUTH_SOCK="$sock"
+}
+bitwarden_ssh_agent
+unset -f bitwarden_ssh_agent
+
 ghostty_fuzzy_cd_on_start() {
     [[ -o interactive ]] || return
     [[ -t 0 && -t 1 ]] || return

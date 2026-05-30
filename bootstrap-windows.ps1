@@ -66,6 +66,11 @@ function Install-WithWinget {
     }
 }
 
+function Set-GitConfigLocal {
+    param([string]$Key, [string]$Value)
+    git config --global --file "$env:USERPROFILE\.gitconfig.local" $Key $Value
+}
+
 # ---------------------------------------------------------------------------
 # 1. Install WSL2
 # ---------------------------------------------------------------------------
@@ -92,6 +97,7 @@ if ($wslInstalled) {
 Write-Host "`n=== Applications ===" -ForegroundColor Cyan
 Install-WithWinget 'Git.Git'                 'Git'
 Install-WithWinget 'Alacritty.Alacritty'     'Alacritty'
+Install-WithWinget 'Bitwarden.Bitwarden'     'Bitwarden'
 Install-WithWinget 'Neovim.Neovim'           'Neovim'
 Install-WithWinget 'Anthropic.ClaudeCode'    'Claude Code'
 
@@ -103,7 +109,30 @@ if (Get-Command codex -ErrorAction SilentlyContinue) {
 }
 
 # ---------------------------------------------------------------------------
-# 3. Symlink configs
+# 3. Bitwarden SSH agent
+# ---------------------------------------------------------------------------
+Write-Host "`n=== Bitwarden SSH Agent ===" -ForegroundColor Cyan
+$sshAgentService = Get-Service -Name ssh-agent -ErrorAction SilentlyContinue
+if ($sshAgentService) {
+    if ($sshAgentService.Status -ne 'Stopped') {
+        Stop-Service -Name ssh-agent -Force
+    }
+    Set-Service -Name ssh-agent -StartupType Disabled
+    Write-Host "  Disabled Windows OpenSSH Authentication Agent service." -ForegroundColor Green
+} else {
+    Write-Host "  Windows OpenSSH Authentication Agent service not found." -ForegroundColor DarkGray
+}
+
+if (Get-Command git -ErrorAction SilentlyContinue) {
+    Set-GitConfigLocal 'core.sshCommand' 'C:/Windows/System32/OpenSSH/ssh.exe'
+    Set-GitConfigLocal 'gpg.ssh.program' 'C:/Windows/System32/OpenSSH/ssh-keygen.exe'
+    Write-Host "  Wrote Windows OpenSSH settings to ~/.gitconfig.local." -ForegroundColor Green
+} else {
+    Write-Host "  Git is not on PATH yet; re-run bootstrap after Git updates PATH." -ForegroundColor Yellow
+}
+
+# ---------------------------------------------------------------------------
+# 4. Symlink configs
 # ---------------------------------------------------------------------------
 Write-Host "`n=== Symlinks ===" -ForegroundColor Cyan
 
@@ -129,7 +158,7 @@ if (Test-Path "$DotfilesDir\zed\.config\zed\keymap.json") {
 }
 
 # ---------------------------------------------------------------------------
-# 4. Bootstrap WSL2 dev environment
+# 5. Bootstrap WSL2 dev environment
 # ---------------------------------------------------------------------------
 Write-Host "`n=== WSL2 Dev Environment ===" -ForegroundColor Cyan
 $answer = Read-Host "Bootstrap dotfiles inside WSL2 now? [Y/n]"
