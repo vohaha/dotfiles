@@ -141,6 +141,10 @@ BITWARDEN_INSTALLED="$(app_installed Bitwarden \
     "linux:which:bw" \
     "windows:which:bw") $(has bw && echo "+ cli" || echo "")"
 
+# Layer 7 — AI CLIs
+CODEX_INSTALLED="$(installed codex)"
+CLAUDE_INSTALLED="$(installed claude)"
+
 # ── write output ──────────────────────────────────────────────────────────────
 
 cat > "$OUTPUT" <<EOF
@@ -232,6 +236,17 @@ Zed uses vim mode + JetBrains base keymap. Neovim uses LazyVim (available, defer
 | Bitwarden | $BITWARDEN_INSTALLED installed |
 
 These are intentionally native per OS — minimal config to capture.
+
+---
+
+## Layer 7 — AI CLIs
+
+| Component | Status |
+|---|---|
+| Codex CLI | $CODEX_INSTALLED installed |
+| Claude Code | $CLAUDE_INSTALLED installed |
+
+Authentication is machine-local via vendor login or secrets in \`~/.secrets\`.
 
 ---
 

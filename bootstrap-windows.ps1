@@ -93,6 +93,14 @@ Write-Host "`n=== Applications ===" -ForegroundColor Cyan
 Install-WithWinget 'Git.Git'                 'Git'
 Install-WithWinget 'Alacritty.Alacritty'     'Alacritty'
 Install-WithWinget 'Neovim.Neovim'           'Neovim'
+Install-WithWinget 'Anthropic.ClaudeCode'    'Claude Code'
+
+if (Get-Command codex -ErrorAction SilentlyContinue) {
+    Write-Host "  Codex CLI already installed." -ForegroundColor DarkGray
+} else {
+    Write-Host "  Installing Codex CLI..."
+    powershell.exe -ExecutionPolicy Bypass -Command "irm https://chatgpt.com/codex/install.ps1 | iex"
+}
 
 # ---------------------------------------------------------------------------
 # 3. Symlink configs

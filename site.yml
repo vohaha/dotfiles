@@ -6,6 +6,8 @@
 
   roles:
     - packages
+    - role: ai-clis
+      tags: [ai-clis]
     - role: macos-defaults
       when: ansible_facts['system'] == 'Darwin'
     - stow

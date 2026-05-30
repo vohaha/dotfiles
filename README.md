@@ -46,6 +46,11 @@ These are **never committed** — create them on each machine after bootstrap:
 | `~/.secrets` | API keys and tokens — sourced from `.zshrc` |
 | `~/.gitconfig.local` | Machine-managed git config (GCM, git-lfs) — included via `[include]` |
 
+## AI CLIs
+
+`bootstrap.sh` installs Codex CLI and Claude Code through the `ai-clis` Ansible role.
+Authentication stays machine-local: sign in interactively or put API keys in `~/.secrets`.
+
 ## Tools
 
 Install all tools via Homebrew:

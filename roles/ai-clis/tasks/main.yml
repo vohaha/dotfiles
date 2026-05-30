@@ -1,0 +1,78 @@
+---
+# Installs local AI coding agents. Authentication is intentionally machine-local:
+# use interactive vendor login or secrets in ~/.secrets, never committed config.
+
+- name: Define AI CLI install paths
+  ansible.builtin.set_fact:
+    ai_cli_bin_dir: "{{ ansible_facts['env'].HOME }}/.local/bin"
+    ai_cli_path: "{{ ansible_facts['env'].HOME }}/.local/bin:{{ ansible_facts['env'].PATH | default('') }}"
+  tags:
+    - always
+
+- name: Ensure user-local bin directory exists
+  ansible.builtin.file:
+    path: "{{ ai_cli_bin_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Check Codex CLI
+  ansible.builtin.command: "which codex"
+  environment:
+    PATH: "{{ ai_cli_path }}"
+  register: codex_which
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Install Codex CLI
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ai_cli_path }}"
+  changed_when: true
+  when: codex_which.rc != 0
+
+- name: Check Claude Code
+  ansible.builtin.command: "which claude"
+  environment:
+    PATH: "{{ ai_cli_path }}"
+  register: claude_which
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Install Claude Code
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL https://claude.ai/install.sh | bash
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ai_cli_path }}"
+  changed_when: true
+  when: claude_which.rc != 0
+
+- name: "[verify] AI CLIs resolvable on PATH"
+  ansible.builtin.command: "which {{ item }}"
+  environment:
+    PATH: "{{ ai_cli_path }}"
+  loop:
+    - codex
+    - claude
+  changed_when: false
+  check_mode: false
+  tags: verify
+
+- name: "[verify] AI CLI versions"
+  ansible.builtin.command: "{{ item }} --version"
+  environment:
+    PATH: "{{ ai_cli_path }}"
+  loop:
+    - codex
+    - claude
+  changed_when: false
+  check_mode: false
+  tags: verify

@@ -20,6 +20,10 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Keep bootstrap/doctor aligned with the interactive shell path managed by
+# shell/.zshrc, especially for vendor CLIs installed under ~/.local/bin.
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
 # Source secrets so ansible_env.X gates resolve correctly. Optional: CI and
 # fresh machines will not have this file, and that is a valid state.
 if [ -f "$HOME/.secrets" ]; then
